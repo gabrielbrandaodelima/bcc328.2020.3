@@ -41,7 +41,7 @@ Significant contributions to the implementation will be used to assign a grade t
      - [x] variable (Felipe - PR #55))
      - [x] unary operation  (Fabricio - PR #53)
      - [x] binary operation  (Fabricio - PR #53)
-     - [x] assignment(Gabriel Lima)
+     - [x] assignment(Gabriel Lima - PR #73)
      - [x] function call   (Artur - PR #57)
      - [x] if (Koda - PR #61)
      - [x] while
@@ -62,7 +62,7 @@ Significant contributions to the implementation will be used to assign a grade t
      - [x] variable (Felipe - PR #55)
      - [x] unary operation  (Fabricio - PR #53)
      - [x] binary operation  (Fabricio - PR #53)
-     - [ ] assignment
+     - [x] assignment (Gabriel Lima - PR #73)
      - [x] function call  (Artur - PR #57)
      - [x] if (Koda - PR #61)
      - [x] while
@@ -83,7 +83,7 @@ Significant contributions to the implementation will be used to assign a grade t
      - [x] variable (Felipe - PR #55)
      - [x] unary operation  (Fabricio - PR #53)
      - [x] binary operation  (Fabricio - PR #53)
-     - [x] assignment(Gabriel Lima)
+     - [x] assignment(Gabriel Lima - PR #73)
      - [x] function call   (Artur - PR #57)
      - [x] if (Koda - PR #61)
      - [x] while
