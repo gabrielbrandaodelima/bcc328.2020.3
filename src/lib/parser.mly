@@ -87,7 +87,7 @@ exp:
 | LPAREN es=exp_seq RPAREN                     {$loc % ExpSeq es}
 | x=var                                        {$loc % VarExp x}
 | LET d=list(dec) IN e=exp                     {$loc % LetExp (d, e)}
-| l=var ASSIGN r=exp                        {$loc % AssignExp (l,r)}
+| l=var ASSIGN r=exp                           {$loc % AssignExp (l,r)}
 
 (* semicolon separated sequence of expressions *)
 exp_seq:
