@@ -68,38 +68,38 @@ let rec check_exp env (pos, (exp, tref)) =
   |A.BinaryExp (left, op ,right) ->
     let typeLeft = check_exp env left in
     let typeRight = check_exp env right in 
-    match op with 
-    | A.Plus 
-    | A.Minus 
-    | A.Times 
-    | A.Div 
-    | A.Mod 
-    | A.Power -> 
-        begin match typeLeft , typeRight with 
-        | T.INT, T.INT    -> set tref T.INT
-        | T.INT, T.REAL 
-        | T.REAL, T.INT 
-        | T.REAL, T.REAL  -> set tref T.REAL
-        | _               -> type_mismatch pos typeLeft typeRight
+    begin match op with 
+      | A.Plus 
+      | A.Minus 
+      | A.Times 
+      | A.Div 
+      | A.Mod 
+      | A.Power -> 
+          begin match typeLeft , typeRight with 
+          | T.INT, T.INT    -> set tref T.INT
+          | T.INT, T.REAL 
+          | T.REAL, T.INT 
+          | T.REAL, T.REAL  -> set tref T.REAL
+          | _               -> type_mismatch pos typeLeft typeRight
+          end
+      | A.Equal 
+      | A.NotEqual 
+      | A.LowerThan 
+      | A.GreaterThan 
+      | A.GreaterEqual 
+      | A.LowerEqual -> compatible typeLeft typeRight pos; set tref T.BOOL
+      | A.And 
+      | A.Or ->
+        begin match typeLeft, typeRight with
+          | T.BOOL, T.BOOL -> set tref T.BOOL
+          | _ -> (
+            match typeLeft with 
+            | T.BOOL -> type_mismatch pos T.BOOL typeRight 
+            | _ -> type_mismatch pos T.BOOL typeLeft
+            )
         end
-    | A.Equal 
-    | A.NotEqual 
-    | A.LowerThan 
-    | A.GreaterThan 
-    | A.GreaterEqual 
-    | A.LowerEqual -> compatible typeLeft typeRight pos; set tref T.BOOL
-    | A.And 
-    | A.Or ->
-      begin match typeLeft, typeRight with
-        | T.BOOL, T.BOOL -> set tref T.BOOL
-        | _ -> (
-          match typeLeft with 
-          | T.BOOL -> type_mismatch pos T.BOOL typeRight 
-          | _ -> type_mismatch pos T.BOOL typeLeft
-          )
-      end
-      | _ -> Error.fatal "not implemented"
-
+        | _ -> Error.fatal "not implemented"
+    end
 
   | A.NegativeExp exp -> let it = check_exp env exp in 
      begin match it with
