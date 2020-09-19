@@ -118,7 +118,7 @@ let rec check_exp env (pos, (exp, tref)) =
   
   |A.IfExp (cond, exp, els) ->
     let cAux = check_exp env cond in
-    match cAux with
+    begin match cAux with
       | T.BOOL -> let exp' = check_exp env exp in
         match els with 
           | Some lexp -> let els' = check_exp env lexp in
@@ -126,13 +126,17 @@ let rec check_exp env (pos, (exp, tref)) =
             set tref exp'
           |  None -> set tref T.VOID
       | _ -> type_mismatch pos T.BOOL cAux
-
+    end
 
   | A.WhileExp (comp, sc) -> 
     let env_inloop = {env with inloop = true} in
       ignore(check_exp env_inloop comp); 
       ignore(check_exp env_inloop sc); 
       set tref T.VOID
+
+  | A.WhileExp (t, b) -> 
+    let env' = {env with inloop = true} in
+    ignore(check_exp env' t); ignore(check_exp env' b); set tref T.VOID
 
 
   | A.BreakExp -> 
