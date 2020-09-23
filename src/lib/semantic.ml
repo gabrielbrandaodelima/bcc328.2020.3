@@ -63,43 +63,42 @@ let rec check_exp env (pos, (exp, tref)) =
   | A.RealExp _ -> set tref T.REAL
   | A.StringExp _ -> set tref T.STRING
   | A.LetExp (decs, body) -> check_exp_let env pos tref decs body
-
-
-  |A.BinaryExp (left, op ,right) ->
-    let typeLeft = check_exp env left in
-    let typeRight = check_exp env right in 
-    begin match op with 
-      | A.Plus 
-      | A.Minus 
-      | A.Times 
-      | A.Div 
-      | A.Mod 
-      | A.Power -> 
-          begin match typeLeft , typeRight with 
-          | T.INT, T.INT    -> set tref T.INT
-          | T.INT, T.REAL 
-          | T.REAL, T.INT 
-          | T.REAL, T.REAL  -> set tref T.REAL
-          | _               -> type_mismatch pos typeLeft typeRight
-          end
-      | A.Equal 
-      | A.NotEqual 
-      | A.LowerThan 
-      | A.GreaterThan 
-      | A.GreaterEqual 
-      | A.LowerEqual -> compatible typeLeft typeRight pos; set tref T.BOOL
-      | A.And 
-      | A.Or ->
-        begin match typeLeft, typeRight with
-          | T.BOOL, T.BOOL -> set tref T.BOOL
-          | _ -> (
-            match typeLeft with 
-            | T.BOOL -> type_mismatch pos T.BOOL typeRight 
-            | _ -> type_mismatch pos T.BOOL typeLeft
-            )
+(* ATV 2 18/9 *)
+  | A.BinaryExp (left, op ,right) ->
+      let typeLeft = check_exp env left in
+      let typeRight = check_exp env right in 
+        begin match op with 
+          | A.Plus 
+          | A.Minus 
+          | A.Times 
+          | A.Div 
+          | A.Mod 
+          | A.Power -> 
+              begin match typeLeft , typeRight with 
+              | T.INT, T.INT    -> set tref T.INT
+              | T.INT, T.REAL 
+              | T.REAL, T.INT 
+              | T.REAL, T.REAL  -> set tref T.REAL
+              | _               -> type_mismatch pos typeLeft typeRight
+              end
+          | A.Equal 
+          | A.NotEqual 
+          | A.LowerThan 
+          | A.GreaterThan 
+          | A.GreaterEqual 
+          | A.LowerEqual -> compatible typeLeft typeRight pos; set tref T.BOOL
+          | A.And 
+          | A.Or ->
+            begin match typeLeft, typeRight with
+              | T.BOOL, T.BOOL -> set tref T.BOOL
+              | _ -> (
+                match typeLeft with 
+                | T.BOOL -> type_mismatch pos T.BOOL typeRight 
+                | _ -> type_mismatch pos T.BOOL typeLeft
+                )
+            end
+            | _ -> Error.fatal "not implemented"
         end
-        | _ -> Error.fatal "not implemented"
-    end
 
   | A.NegativeExp exp -> let it = check_exp env exp in 
      begin match it with
@@ -116,17 +115,17 @@ let rec check_exp env (pos, (exp, tref)) =
     in
       check_seq exSeq
   
-  |A.IfExp (cond, exp, els) ->
-    let cAux = check_exp env cond in
-    begin match cAux with
-      | T.BOOL -> let exp' = check_exp env exp in
-        match els with 
-          | Some lexp -> let els' = check_exp env lexp in
-            compatible exp' els' pos ; 
-            set tref exp'
-          |  None -> set tref T.VOID
-      | _ -> type_mismatch pos T.BOOL cAux
-    end
+  | A.IfExp (cond, exp, els) ->
+      let cAux = check_exp env cond in
+      begin match cAux with
+        | T.BOOL -> let exp' = check_exp env exp in
+          match els with 
+            | Some lexp -> let els' = check_exp env lexp in
+              compatible exp' els' pos ; 
+              set tref exp'
+            |  None -> set tref T.VOID
+        | _ -> type_mismatch pos T.BOOL cAux
+      end
 
   | A.WhileExp (comp, sc) -> 
     let env_inloop = {env with inloop = true} in
@@ -134,19 +133,21 @@ let rec check_exp env (pos, (exp, tref)) =
       ignore(check_exp env_inloop sc); 
       set tref T.VOID
 
-  | A.WhileExp (t, b) -> 
-    let env' = {env with inloop = true} in
-    ignore(check_exp env' t); ignore(check_exp env' b); set tref T.VOID
-
-
   | A.BreakExp -> 
-    if(env.inloop) then
-      T.VOID
-    else 
-      Error.error pos "Break outside of loop"
+      if(env.inloop) then
+        T.VOID
+      else 
+        Error.error pos "Break outside of loop"
 
+(* ENDLINE ATV 2 *)
 
-  | _ -> Error.fatal "unimplemented"
+(* ATV 3 23/9 *)
+| A.CallExp (nf, args)-> check_exp_call env pos tref nf args
+(* ENDLINE ATV3 *)
+| _ -> Error.fatal "unimplemented"
+and check_exp_call env pos tref nf args = 
+      TODO()
+
 
 and check_exp_let env pos tref decs body =
   let env' = List.fold_left check_dec env decs in
