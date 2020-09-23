@@ -56,13 +56,16 @@ let set reference value =
   
 let rec getReturnVarType  params acc env p  =
   match params with
-  |((_, ty)::xs) -> getReturnVarType xs (acc@([tylook env.tenv t p]) env pos)
+  |((_, t)::xs) -> getReturnVarType xs (acc@[tylook env.tenv t p]) env p
   |[] -> acc
 
 let rec getReturnVarName params acc = 
   match params with 
   |((name , _  )::xs) -> getReturnVarName xs ( acc @ [S.name name])
   |[] -> acc
+
+let throw_error_mult_vars pos var =
+  Error.error pos "Error: multiple variable decalrations ! \nVariable : %s " var
 
 let rec checkVarNames vars p =
   match vars with
@@ -193,13 +196,13 @@ and check_exp_call env pos tref nf args =
       set tref res
 
 and throw_error_few_args pos n1 n2 =
-  Error.error pos "Error args fewer than params: \nargs length: %d \nparams length: %d" n1 n2
+    Error.error pos "Error args fewer than params: \nargs length: %d \nparams length: %d" n1 n2
 
 and throw_error_many_args pos n1 n2 =
     Error.error pos "Error args greater than params: \nargs length: %d \n params length: %d" n1 n2
 
 and throw_error_mult_vars pos var =
-Error.error pos "Error: multiple variable decalrations ! \nVariable : %s " var
+    Error.error pos "Error: multiple variable decalrations ! \nVariable : %s " var
 
 and check_param_types env (pos, e) dt = 
     let t = check_exp env (pos, e) in
