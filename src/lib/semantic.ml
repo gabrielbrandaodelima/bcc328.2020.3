@@ -54,14 +54,14 @@ let set reference value =
   reference := Some value;
   value
   
-let rec getReturnType ( params acc env pos ) =
+let rec getReturnVarType  params acc env p  =
   match params with
-  |((_, ty)::xs) -> getReturnType xs (acc@([tylook env.tenv t pos]) env pos)
+  |((_, ty)::xs) -> getReturnVarType xs (acc@([tylook env.tenv t p]) env pos)
   |[] -> acc
 
-let rec getReturnName params acc = 
+let rec getReturnVarName params acc = 
   match params with 
-  |((name , _  )::xs) -> getReturnName xs ( acc @ [S.name name])
+  |((name , _  )::xs) -> getReturnVarName xs ( acc @ [S.name name])
   |[] -> acc
 
 let rec checkVarNames vars p =
@@ -71,6 +71,13 @@ let rec checkVarNames vars p =
       throw_error_mult_vars p x
     else 
       checkVarNames xs p
+  |_ -> ()
+
+let rec getNewEnv fn params tr (env, p) =
+  let vars = getReturnVarName params [] env p in
+  let newEnv = S.enter fn (FunEntry (vars, tr)) env.venv in
+  {env with venv = newEnv} 
+
 (* Checking expressions *)
 
 let rec check_exp env (pos, (exp, tref)) =
