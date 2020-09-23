@@ -108,7 +108,7 @@ dec:
 | FUNCTION f= ID LPAREN pl=paramlist RPAREN COLON t=ID EQ ex=exp {$loc, FunDec (dummyt f,pl,t,ex)}
 
 paramlist:
-| ty = separated_list (COMMA, param)
+| ty = separated_list (COMMA, param)            {ty}
 
 param:
 | p = ID COLON ty = ID                          {p,ty}

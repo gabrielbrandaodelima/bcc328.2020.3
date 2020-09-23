@@ -106,6 +106,6 @@ and tree_of_lvar (_, x) = tree_of_var x
 
 and tree_of_ldec (_, x) = tree_of_dec x
 
-let tree_of_params (p , p1) = mktr "ParamDef" [tree_of_symbol p; tree_of_symbol p1]
+and tree_of_params (p , p1) = mktr "ParamDef" [tree_of_symbol p; tree_of_symbol p1]
 
-let tree_of_paramsList pl = mktr "ParamsList" (List.map tree_of_params pl)
+and tree_of_paramsList pl = mktr "ParamsList" (List.map tree_of_params pl)
