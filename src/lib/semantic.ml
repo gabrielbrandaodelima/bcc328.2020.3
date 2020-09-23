@@ -53,7 +53,24 @@ let compatible ty1 ty2 pos =
 let set reference value =
   reference := Some value;
   value
+  
+let rec getReturnType ( params acc env pos ) =
+  match params with
+  |((_, ty)::xs) -> getReturnType xs (acc@([tylook env.tenv t pos]) env pos)
+  |[] -> acc
 
+let rec getReturnName params acc = 
+  match params with 
+  |((name , _  )::xs) -> getReturnName xs ( acc @ [S.name name])
+  |[] -> acc
+
+let rec checkVarNames vars p =
+  match vars with
+  | (x::xs) -> 
+    if List.mem x xs then
+      throw_error_mult_vars p x
+    else 
+      checkVarNames xs p
 (* Checking expressions *)
 
 let rec check_exp env (pos, (exp, tref)) =
@@ -165,7 +182,10 @@ and throw_error_few_args pos n1 n2 =
 
 and throw_error_many_args pos n1 n2 =
     Error.error pos "Error args greater than params: \nargs length: %d \n params length: %d" n1 n2
-      
+
+and throw_error_mult_vars pos var =
+Error.error pos "Error: multiple variable decalrations ! \nVariable : %s " var
+
 and check_param_types env (pos, e) dt = 
     let t = check_exp env (pos, e) in
       compatible t dt pos 
@@ -198,7 +218,9 @@ and check_dec env (pos, dec) =
 
   | _ -> Error.fatal "unimplemented"
 
-and check_dec_fun env pos =
-    TODO()
+and check_dec_fun env pos ((nf, pl , tr , b),tref) =
+  
+
+
 let semantic program =
   check_exp Env.initial program
