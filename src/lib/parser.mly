@@ -107,5 +107,11 @@ dec:
 | VAR x=ID t=optional_type EQ e=exp                              {$loc, VarDec (dummyt (x, t, e))}
 | FUNCTION f= ID LPAREN pl=paramlist RPAREN COLON t=ID EQ ex=exp {$loc, FunDec (dummyt f,pl,t,ex)}
 
+paramlist:
+| ty = separated_list (COMMA, param)
+
+param:
+| p = ID COLON ty = ID                          {p,ty}
+
 optional_type:
 | ot=option(COLON t=ID {t})                    {ot}
