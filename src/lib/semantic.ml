@@ -146,7 +146,10 @@ let rec check_exp env (pos, (exp, tref)) =
 (* ENDLINE ATV3 *)
   | _ -> Error.fatal "unimplemented"
 and check_exp_call env pos tref nf args = 
-      TODO()
+(* check params and return  *)
+      let (p, r) = funlook env.venv nf pos in
+      ignore (check_param_types args p env pos);
+      set tref r
 
 
 and check_exp_let env pos tref decs body =
