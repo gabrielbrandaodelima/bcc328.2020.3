@@ -74,18 +74,18 @@ let rec checkVarNames vars p =
   |_ -> ()
 
 let rec getNewEnv fn params tr (env, p) =
-  let vars = getReturnVarName params [] env p in
+  let vars = getReturnVarType params [] env p in
   let newEnv = S.enter fn (FunEntry (vars, tr)) env.venv in
   {env with venv = newEnv} 
 
 let rec addAllVarsInEnv vars env p = 
   match vars with
     | ((x, y)::xs) -> 
-      let nenv = S.enter n (VarEntry (tylook env.tenv y p)) env.venv in
+      let nenv = S.enter x (VarEntry (tylook env.tenv y p)) env.venv in
       let en = {env with venv = nenv } in
-      addAllVarsInEnv en p
+      addAllVarsInEnv xs en p
     |[] -> env
-    
+
 (* Checking expressions *)
 
 let rec check_exp env (pos, (exp, tref)) =
@@ -234,8 +234,17 @@ and check_dec env (pos, dec) =
   | _ -> Error.fatal "unimplemented"
 
 and check_dec_fun env pos ((nf, pl , tr , b),tref) =
+  let rType = tylook env.tenv tr pos in
+  let nEnv = getNewEnv nf pl rType (env, pos) in
+  let vNames = getReturnVarName pl [] in
   
+  ignore (checkVarNames vNames pos);
 
+  let envBody = addAllVarsInEnv pl nEnv pos in
+  let matches = check_exp envBody b in
+  compatible matches rType pos;
+  ignore (set tref rType);
+  nEnv
 
 let semantic program =
   check_exp Env.initial program
