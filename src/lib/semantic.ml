@@ -147,10 +147,22 @@ let rec check_exp env (pos, (exp, tref)) =
   | _ -> Error.fatal "unimplemented"
 and check_exp_call env pos tref nf args = 
 (* check params and return  *)
-      let (p, r) = funlook env.venv nf pos in
-      ignore (check_param_types args p env pos);
-      set tref r
+      let (par, res) = funlook env.venv nf pos in
+      let arLen = List.length args 
+      and parLen = List.length par in
 
+        if (arLen > parLen) then
+          Error.error pos "Error args greater than params: \nargs length: %d \n params length: %d" n1 n2
+        else if (arLen < parLen) then 
+          Error.error pos "Error args fewer than params: \nargs length: %d \nparams length: %d" n1 n2
+        else 
+          List.iter2 (check_param_types env) args par;
+      
+      set tref res
+
+and check_param_types env (pos, e) dt = 
+    let type = check_exp env (pos, e) in
+      compatible type dt pos 
 
 and check_exp_let env pos tref decs body =
   let env' = List.fold_left check_dec env decs in
@@ -184,3 +196,5 @@ and check_dec_fun env pos =
     TODO()
 let semantic program =
   check_exp Env.initial program
+
+  
