@@ -85,6 +85,14 @@ and tree_of_var var =
 and tree_of_dec dec =
   match dec with
   | VarDec vardec -> tree_of_typed tree_of_vardec vardec
+  | FunDec fundec -> tree_of_typed tree_of_fundec fundec
+
+and tree_of_fundec (s,ls,s1,ep) = mktr "FunDec"[
+  tree_of_symbol s;
+  tree_of_paramsList ls;
+  tree_of_symbol s1;
+  tree_of_lexp ep
+]
 
 and tree_of_vardec (v, t, i) =
   mktr "VarDec" [ tree_of_symbol v;
@@ -98,3 +106,6 @@ and tree_of_lvar (_, x) = tree_of_var x
 
 and tree_of_ldec (_, x) = tree_of_dec x
 
+let tree_of_params (p , p1) = mktr "ParamDef" [tree_of_symbol p; tree_of_symbol p1]
+
+let tree_of_paramsList pl = mktr "ParamsList" (List.map tree_of_params pl)
