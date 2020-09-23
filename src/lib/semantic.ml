@@ -152,17 +152,23 @@ and check_exp_call env pos tref nf args =
       and parLen = List.length par in
 
         if (arLen > parLen) then
-          Error.error pos "Error args greater than params: \nargs length: %d \n params length: %d" n1 n2
+          throw_error_many_args pos arLen parLen
         else if (arLen < parLen) then 
-          Error.error pos "Error args fewer than params: \nargs length: %d \nparams length: %d" n1 n2
+          throw_error_few_args pos arLen parLen
         else 
           List.iter2 (check_param_types env) args par;
       
       set tref res
 
+and throw_error_few_args pos n1 n2 =
+  Error.error pos "Error args fewer than params: \nargs length: %d \nparams length: %d" n1 n2
+
+and throw_error_many_args pos n1 n2 =
+    Error.error pos "Error args greater than params: \nargs length: %d \n params length: %d" n1 n2
+      
 and check_param_types env (pos, e) dt = 
-    let type = check_exp env (pos, e) in
-      compatible type dt pos 
+    let t = check_exp env (pos, e) in
+      compatible t dt pos 
 
 and check_exp_let env pos tref decs body =
   let env' = List.fold_left check_dec env decs in
@@ -196,5 +202,3 @@ and check_dec_fun env pos =
     TODO()
 let semantic program =
   check_exp Env.initial program
-
-  
