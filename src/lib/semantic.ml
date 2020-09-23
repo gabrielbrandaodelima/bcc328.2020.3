@@ -142,9 +142,9 @@ let rec check_exp env (pos, (exp, tref)) =
 (* ENDLINE ATV 2 *)
 
 (* ATV 3 23/9 *)
-| A.CallExp (nf, args)-> check_exp_call env pos tref nf args
+  | A.CallExp (nf, args)-> check_exp_call env pos tref nf args
 (* ENDLINE ATV3 *)
-| _ -> Error.fatal "unimplemented"
+  | _ -> Error.fatal "unimplemented"
 and check_exp_call env pos tref nf args = 
       TODO()
 
@@ -173,7 +173,11 @@ and check_dec_var env pos ((name, type_opt, init), tref) =
 and check_dec env (pos, dec) =
   match dec with
   | A.VarDec x -> check_dec_var env pos x
+  | A.FunDec y -> check_dec_fun env pos y
+
   | _ -> Error.fatal "unimplemented"
 
+and check_dec_fun env pos =
+    TODO()
 let semantic program =
   check_exp Env.initial program
