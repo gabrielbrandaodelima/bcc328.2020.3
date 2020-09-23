@@ -78,6 +78,14 @@ let rec getNewEnv fn params tr (env, p) =
   let newEnv = S.enter fn (FunEntry (vars, tr)) env.venv in
   {env with venv = newEnv} 
 
+let rec addAllVarsInEnv vars env p = 
+  match vars with
+    | ((x, y)::xs) -> 
+      let nenv = S.enter n (VarEntry (tylook env.tenv y p)) env.venv in
+      let en = {env with venv = nenv } in
+      addAllVarsInEnv en p
+    |[] -> env
+    
 (* Checking expressions *)
 
 let rec check_exp env (pos, (exp, tref)) =
